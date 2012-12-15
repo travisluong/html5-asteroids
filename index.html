@@ -32,24 +32,22 @@ canvas.height = HEIGHT;
 document.getElementById("stage").appendChild(canvas);
 
 // load images
-var ship_img_ready = false;
+ship_info = new ImageInfo(45, 45, 90, 90, 35, false);
 var ship_img = new Image();
 ship_img.onload = function () {
-	ship_img_ready = true;
+	ship_info.img_ready = true;
 }
 ship_img.src = "img/double_ship.png";
-ship_info = new ImageInfo(45, 45, 90, 90, 35);
 
-var asteroid_img_ready = false;
+asteroid_info = new ImageInfo(45, 45, 90, 90, 40, false);
 var asteroid_img = new Image();
 asteroid_img.onload = function () {
-	asteroid_img_ready = true;
+	asteroid_info.img_ready = true;
 }
 asteroid_img.src = "img/asteroid_blue.png";
-asteroid_info = new ImageInfo(45, 45, 90, 90, 40);
 
 // image info class
-function ImageInfo(x_center, y_center, width, height, radius, lifespan, animated) {
+function ImageInfo(x_center, y_center, width, height, radius, lifespan, animated, img_ready) {
 	this.x_center = x_center;
 	this.y_center = y_center;
 	this.width = width;
@@ -57,11 +55,18 @@ function ImageInfo(x_center, y_center, width, height, radius, lifespan, animated
 	this.radius = radius;
 	this.lifespan = lifespan;
 	this.animated = animated;
+	this.img_ready = img_ready;
 };
 
-function angle_to_vector(ang) {
+// angle to vector helper function
+var angle_to_vector = function (ang) {
 	return [Math.cos(ang), Math.sin(ang)];
 };
+
+// draw sprite helper function
+var draw_sprite = function () {
+
+}
 
 // ship class
 function Ship(x, y, x_vel, y_vel, ang, ang_vel, image, info) {
@@ -83,12 +88,12 @@ function Ship(x, y, x_vel, y_vel, ang, ang_vel, image, info) {
 		ctx.translate(this.x, this.y);
 		// rotate ship
 		ctx.rotate(this.ang);
-		if (ship_img_ready) {
+		if (info.img_ready) {
 			// drawImage(image, sx, sy, sWidth, sHeight, dx, dy, dWidth, dHeight)
 			if (this.thrust) {
-				ctx.drawImage(ship_img, 90, 0, info.width, info.height, -this.image_center_x, -this.image_center_y, info.width, info.height);
+				ctx.drawImage(image, 90, 0, info.width, info.height, -this.image_center_x, -this.image_center_y, info.width, info.height);
 			} else {
-				ctx.drawImage(ship_img, 0, 0, info.width, info.height, -this.image_center_x, -this.image_center_y, info.width, info.height);
+				ctx.drawImage(image, 0, 0, info.width, info.height, -this.image_center_x, -this.image_center_y, info.width, info.height);
 			}
 		}
 		// restore context
@@ -137,8 +142,29 @@ function Ship(x, y, x_vel, y_vel, ang, ang_vel, image, info) {
 	return this;
 };
 
-function Sprite(x, y, x_vel, y_vel, ang, ang_vel) {
-
+function Sprite(x, y, x_vel, y_vel, ang, ang_vel, image, info, sound) {
+	this.x = x;
+	this.y = y;
+	this.x_vel = x_vel;
+	this.y_vel = y_vel;
+	this.ang = ang;
+	this.ang_vel = ang_vel;
+	this.image = image;
+	this.sound = sound;
+	this.draw = function () {
+		// save context
+		ctx.save();
+		// move origin to the x and y position of sprite
+		ctx.translate(this.x, this.y);
+		// rotate sprite
+		ctx.rotate(this.ang);
+		if (ship_img_ready) {
+			// drawImage(image, sx, sy, sWidth, sHeight, dx, dy, dWidth, dHeight)
+			ctx.drawImage(image, 90, 0, info.width, info.height, -this.image_center_x, -this.image_center_y, info.width, info.height);
+		}
+		// restore context
+		ctx.restore();
+	}
 }
 
 var my_ship = new Ship(200, 200, 0, 0, 0, 0, ship_img, ship_info);
