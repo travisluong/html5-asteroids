@@ -63,11 +63,6 @@ var angle_to_vector = function (ang) {
 	return [Math.cos(ang), Math.sin(ang)];
 };
 
-// draw sprite helper function
-var draw_sprite = function () {
-
-}
-
 // ship class
 function Ship(x, y, x_vel, y_vel, ang, ang_vel, image, info) {
 	this.x = x;
@@ -150,7 +145,12 @@ function Sprite(x, y, x_vel, y_vel, ang, ang_vel, image, info, sound) {
 	this.ang = ang;
 	this.ang_vel = ang_vel;
 	this.image = image;
-	this.sound = sound;
+	this.radius = info.radius;
+	this.lifespan = info.lifespan;
+	this.animated = info.animated;
+	this.image_center_x = info.x_center;
+	this.image_center_y = info.y_center;
+	this.age = 0;
 	this.draw = function () {
 		// save context
 		ctx.save();
@@ -158,14 +158,16 @@ function Sprite(x, y, x_vel, y_vel, ang, ang_vel, image, info, sound) {
 		ctx.translate(this.x, this.y);
 		// rotate sprite
 		ctx.rotate(this.ang);
-		if (ship_img_ready) {
+		if (info.img_ready) {
 			// drawImage(image, sx, sy, sWidth, sHeight, dx, dy, dWidth, dHeight)
-			ctx.drawImage(image, 90, 0, info.width, info.height, -this.image_center_x, -this.image_center_y, info.width, info.height);
+			ctx.drawImage(image, 0, 0, info.width, info.height, -this.image_center_x, -this.image_center_y, info.width, info.height);
 		}
 		// restore context
 		ctx.restore();
 	}
 }
+
+var a_rock = new Sprite(300, 300, 0, 0, 0, 0, asteroid_img, asteroid_info);
 
 var my_ship = new Ship(200, 200, 0, 0, 0, 0, ship_img, ship_info);
 
@@ -204,6 +206,9 @@ var render = function () {
 
 	// draw ship
 	my_ship.draw();
+
+	// draw rock
+	a_rock.draw();
 
 		// draw position
 		ctx.fillStyle = "rgb(250, 250, 250)";
