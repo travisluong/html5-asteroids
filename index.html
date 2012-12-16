@@ -137,6 +137,7 @@ function Ship(x, y, x_vel, y_vel, ang, ang_vel, image, info) {
 	return this;
 };
 
+// sprite class
 function Sprite(x, y, x_vel, y_vel, ang, ang_vel, image, info, sound) {
 	this.x = x;
 	this.y = y;
@@ -164,10 +165,40 @@ function Sprite(x, y, x_vel, y_vel, ang, ang_vel, image, info, sound) {
 		}
 		// restore context
 		ctx.restore();
-	}
+	};
+	this.update = function (modifier) {
+		// update position
+		if (this.y <= 0) {
+			this.y = HEIGHT;
+		} else {
+			this.y = (this.y + (this.y_vel * modifier)) % HEIGHT;
+		}
+		if (this.x <= 0) {
+			this.x = WIDTH;
+		} else {
+			this.x = (this.x + (this.x_vel * modifier)) % WIDTH;
+		}
+
+		// update angle
+		this.ang += this.ang_vel * modifier;
+	};
 }
 
-var a_rock = new Sprite(300, 300, 0, 0, 0, 0, asteroid_img, asteroid_info);
+var rock_group = [];
+
+// rock spawner
+var rock_spawner = function () {
+	var rock_x = Math.random() * WIDTH;
+	var rock_y = Math.random() * HEIGHT;
+	var rock_x_vel = Math.random() * 100;
+	var rock_y_vel = Math.random() * 100;
+	var plus_or_minus = Math.random() < 0.5 ? -1 : 1;
+	var rock_ang_vel = Math.random() * 5 * plus_or_minus;
+	var a_rock = new Sprite(rock_x, rock_y, rock_x_vel, rock_y_vel, 0, rock_ang_vel, asteroid_img, asteroid_info);
+	rock_group.push(a_rock);
+}
+
+setInterval(rock_spawner, 3000);
 
 var my_ship = new Ship(200, 200, 0, 0, 0, 0, ship_img, ship_info);
 
@@ -195,6 +226,10 @@ var reset = function () {
 // update game objects
 var update = function (modifier) {
 	my_ship.update(modifier);
+
+	for (var i = rock_group.length - 1; i >= 0; i--) {
+		rock_group[i].update(modifier);
+	};
 };
 
 // draw everything
@@ -207,8 +242,10 @@ var render = function () {
 	// draw ship
 	my_ship.draw();
 
-	// draw rock
-	a_rock.draw();
+	// draw rocks
+	for (var i = rock_group.length - 1; i >= 0; i--) {
+		rock_group[i].draw();
+	};
 
 		// draw position
 		ctx.fillStyle = "rgb(250, 250, 250)";
