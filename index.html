@@ -229,6 +229,7 @@ var group_collide = function (group, sprite) {
 			i--; // decrement i by 1 because group is now smaller by 1
 		}
 	}
+	return collisions;
 };
 
 // handle keyboard controls
@@ -255,7 +256,7 @@ var reset = function () {
 // update game objects
 var update = function (modifier) {
 
-	group_collide(rock_group, my_ship);
+	lives -= group_collide(rock_group, my_ship);
 
 	my_ship.update(modifier);
 
@@ -284,8 +285,8 @@ var render = function () {
 	ctx.font = "24px Helvetica";
 	ctx.textAlign = "left";
 	ctx.textBaseline = "top";
-	ctx.fillText(score, 32, 32);
-	ctx.fillText(lives, 558, 32);
+	ctx.fillText('score: ' + score, 32, 32);
+	ctx.fillText('lives: ' + lives, 558, 32);
 };
 
 // the main game loop
