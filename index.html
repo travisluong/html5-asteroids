@@ -23,6 +23,9 @@
 // declare globals
 var WIDTH = 800;
 var HEIGHT = 600;
+var score = 0;
+var lives = 3;
+var started = false;
 
 // create the canvas
 var canvas = document.createElement("canvas");
@@ -61,6 +64,11 @@ function ImageInfo(x_center, y_center, width, height, radius, lifespan, animated
 // angle to vector helper function
 var angle_to_vector = function (ang) {
 	return [Math.cos(ang), Math.sin(ang)];
+};
+
+// distance helper function
+var dist = function (px, py, qx, qy) {
+	return Math.sqrt(Math.pow(px - qx, 2) + Math.pow(py - qy, 2));
 };
 
 // ship class
@@ -182,6 +190,14 @@ function Sprite(x, y, x_vel, y_vel, ang, ang_vel, image, info, sound) {
 		// update angle
 		this.ang += this.ang_vel * modifier;
 	};
+	this.collide = function (other_object) {
+		distance = dist(this.x, this.y, other_object.x, other_object.y);
+		if (distance < (this.radius + other_object.radius)) {
+			return true;
+		} else {
+			return false;
+		}
+	};
 }
 
 var rock_group = [];
@@ -201,6 +217,19 @@ var rock_spawner = function () {
 setInterval(rock_spawner, 3000);
 
 var my_ship = new Ship(200, 200, 0, 0, 0, 0, ship_img, ship_info);
+
+// group collide
+var group_collide = function (group, sprite) {
+	var collisions = 0;
+	var remove_list = [];
+	for (var i = 0; i < group.length; i++) {
+		if (group[i].collide(sprite)) {
+			collisions += 1;
+			group.splice(i, 1);
+			i--; // decrement i by 1 because group is now smaller by 1
+		}
+	}
+};
 
 // handle keyboard controls
 var keysDown = {};
@@ -225,6 +254,9 @@ var reset = function () {
 
 // update game objects
 var update = function (modifier) {
+
+	group_collide(rock_group, my_ship);
+
 	my_ship.update(modifier);
 
 	for (var i = rock_group.length - 1; i >= 0; i--) {
@@ -247,13 +279,13 @@ var render = function () {
 		rock_group[i].draw();
 	};
 
-		// draw position
-		ctx.fillStyle = "rgb(250, 250, 250)";
-		ctx.font = "24px Helvetica";
-		ctx.textAlign = "left";
-		ctx.textBaseline = "top";
-		ctx.fillText(my_ship.x, 32, 32);
-		ctx.fillText(my_ship.y, 558, 32);
+	// draw position
+	ctx.fillStyle = "rgb(250, 250, 250)";
+	ctx.font = "24px Helvetica";
+	ctx.textAlign = "left";
+	ctx.textBaseline = "top";
+	ctx.fillText(score, 32, 32);
+	ctx.fillText(lives, 558, 32);
 };
 
 // the main game loop
