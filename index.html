@@ -49,12 +49,19 @@ asteroid_img.onload = function () {
 }
 asteroid_img.src = "img/asteroid_blue.png";
 
-missile_info = new ImageInfo(5, 5, 10, 10, 3, 1);
+missile_info = new ImageInfo(5, 5, 10, 10, 3, 60);
 var missile_img = new Image();
 missile_img.onload = function () {
 	missile_info.img_ready = true;
 }
 missile_img.src = "img/shot2.png";
+
+explosion_info = new ImageInfo(64, 64, 128, 128, 17, 24, true);
+var explosion_img = new Image();
+explosion_img.onload = function () {
+	explosion_info.img_ready = true;
+}
+explosion_img.src = "img/explosion_alpha.png";
 
 // image info class
 function ImageInfo(x_center, y_center, width, height, radius, lifespan, animated, img_ready) {
@@ -184,8 +191,14 @@ function Sprite(x, y, x_vel, y_vel, ang, ang_vel, image, info, sound) {
 		// rotate sprite
 		ctx.rotate(this.ang);
 		if (info.img_ready) {
-			// drawImage(image, sx, sy, sWidth, sHeight, dx, dy, dWidth, dHeight)
-			ctx.drawImage(image, 0, 0, info.width, info.height, -this.image_center_x, -this.image_center_y, info.width, info.height);
+			if (this.animated) {
+				animation_index = parseInt(this.age % this.lifespan);
+				ctx.drawImage(image, animation_index * info.width, 0, info.width, info.height, -this.image_center_x, -this.image_center_y, info.width, info.height);
+			} else {
+				// drawImage(image, sx, sy, sWidth, sHeight, dx, dy, dWidth, dHeight)
+				ctx.drawImage(image, 0, 0, info.width, info.height, -this.image_center_x, -this.image_center_y, info.width, info.height);
+			}
+
 		}
 		// restore context
 		ctx.restore();
@@ -207,9 +220,9 @@ function Sprite(x, y, x_vel, y_vel, ang, ang_vel, image, info, sound) {
 		this.ang += this.ang_vel * modifier;
 
 		// update age
-		this.age += 1 * modifier;
+		this.age += 1;
 
-		if (this.lifespan == -1) {
+		if (this.lifespan == -1) { // permanent
 			return true;
 		} else if (this.age >= this.lifespan) {
 			return false; // end
@@ -247,6 +260,8 @@ var my_ship = new Ship(200, 200, 0, 0, 0, 0, ship_img, ship_info);
 
 var missile_group = [];
 
+var explosion_group = [];
+
 // group collide
 var group_collide = function (group, sprite) {
 	var collisions = 0;
@@ -254,6 +269,7 @@ var group_collide = function (group, sprite) {
 	for (var i = 0; i < group.length; i++) {
 		if (group[i].collide(sprite)) {
 			collisions += 1;
+			explosion_group.push(new Sprite(group[i].x, group[i].y, 0, 0, 0, 0, explosion_img, explosion_info));
 			group.splice(i, 1);
 			sprite.lifespan = 0;
 			i--; // decrement i by 1 because group is now smaller by 1
@@ -321,6 +337,8 @@ var update = function (modifier) {
 	update_sprite_group(rock_group, modifier);
 
 	update_sprite_group(missile_group, modifier);
+
+	update_sprite_group(explosion_group, modifier);
 };
 
 // draw everything
@@ -338,6 +356,9 @@ var render = function () {
 
 	// draw missiles
 	draw_sprite_group(missile_group);
+
+	// draw explosions
+	draw_sprite_group(explosion_group);
 
 	// draw position
 	ctx.fillStyle = "rgb(250, 250, 250)";
@@ -362,7 +383,7 @@ var main = function () {
 // let's play this game!
 reset();
 var then = Date.now();
-setInterval(main, 1); // execute as fast as possible
+setInterval(main, 16); // run script every 16 milliseconds, approx 60 FPS
 </script>
 </body>
 </html>
