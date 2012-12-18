@@ -42,12 +42,19 @@ ship_img.onload = function () {
 }
 ship_img.src = "img/double_ship.png";
 
-asteroid_info = new ImageInfo(45, 45, 90, 90, 40, false);
+asteroid_info = new ImageInfo(45, 45, 90, 90, 40, -1);
 var asteroid_img = new Image();
 asteroid_img.onload = function () {
 	asteroid_info.img_ready = true;
 }
 asteroid_img.src = "img/asteroid_blue.png";
+
+missile_info = new ImageInfo(5, 5, 10, 10, 3, 1);
+var missile_img = new Image();
+missile_img.onload = function () {
+	missile_info.img_ready = true;
+}
+missile_img.src = "img/shot2.png";
 
 // image info class
 function ImageInfo(x_center, y_center, width, height, radius, lifespan, animated, img_ready) {
@@ -142,6 +149,15 @@ function Ship(x, y, x_vel, y_vel, ang, ang_vel, image, info) {
 		this.x_vel *= 0.99;
 		this.y_vel *= 0.99;
 	};
+	this.shoot = function () {
+		var forward = angle_to_vector(this.ang);
+		var missile_x = this.x + this.radius * forward[0];
+		var missile_y = this.y + this.radius * forward[1];
+		var missile_x_vel = this.x_vel + 400 * forward[0];
+		var missile_y_vel = this.y_vel + 400 * forward[1];
+		var a_missile = new Sprite(missile_x, missile_y, missile_x_vel, missile_y_vel, this.angle, 0, missile_img, missile_info);
+		missile_group.push(a_missile);
+	};
 	return this;
 };
 
@@ -189,6 +205,17 @@ function Sprite(x, y, x_vel, y_vel, ang, ang_vel, image, info, sound) {
 
 		// update angle
 		this.ang += this.ang_vel * modifier;
+
+		// update age
+		this.age += 1 * modifier;
+
+		if (this.lifespan == -1) {
+			return true;
+		} else if (this.age >= this.lifespan) {
+			return false; // end
+		} else {
+			return true; // keep
+		}
 	};
 	this.collide = function (other_object) {
 		distance = dist(this.x, this.y, other_object.x, other_object.y);
@@ -204,19 +231,21 @@ var rock_group = [];
 
 // rock spawner
 var rock_spawner = function () {
+	var plus_or_minus = Math.random() < 0.5 ? -1 : 1;
 	var rock_x = Math.random() * WIDTH;
 	var rock_y = Math.random() * HEIGHT;
-	var rock_x_vel = Math.random() * 100;
-	var rock_y_vel = Math.random() * 100;
-	var plus_or_minus = Math.random() < 0.5 ? -1 : 1;
+	var rock_x_vel = Math.random() * 100 * plus_or_minus;
+	var rock_y_vel = Math.random() * 100 * plus_or_minus;
 	var rock_ang_vel = Math.random() * 5 * plus_or_minus;
 	var a_rock = new Sprite(rock_x, rock_y, rock_x_vel, rock_y_vel, 0, rock_ang_vel, asteroid_img, asteroid_info);
 	rock_group.push(a_rock);
 }
 
-setInterval(rock_spawner, 3000);
+setInterval(rock_spawner, 1000);
 
 var my_ship = new Ship(200, 200, 0, 0, 0, 0, ship_img, ship_info);
+
+var missile_group = [];
 
 // group collide
 var group_collide = function (group, sprite) {
@@ -226,10 +255,18 @@ var group_collide = function (group, sprite) {
 		if (group[i].collide(sprite)) {
 			collisions += 1;
 			group.splice(i, 1);
+			sprite.lifespan = 0;
 			i--; // decrement i by 1 because group is now smaller by 1
 		}
 	}
 	return collisions;
+};
+
+var group_group_collide = function (group1, group2) {
+	for (var i = 0; i < group1.length; i++) {
+		var collisions = group_collide(group2, group1[i]);
+		score += collisions;
+	};
 };
 
 // handle keyboard controls
@@ -242,11 +279,31 @@ addEventListener("keydown", function (e) {
         case 32: e.preventDefault(); break; // space
         default: break; // do not block other keys
     }
+    if (e.keyCode == 32) {
+    	my_ship.shoot();
+    }
 }, false);
 
 addEventListener("keyup", function (e) {
 	delete keysDown[e.keyCode];
 }, false);
+
+// draw sprite group
+var draw_sprite_group = function (sprite_group) {
+	for (var i = 0; i < sprite_group.length; i++) {
+		sprite_group[i].draw();
+	};
+}
+
+// update sprite group
+var update_sprite_group = function (sprite_group, modifier) {
+	for (var i = 0; i < sprite_group.length; i++) {
+		if (sprite_group[i].update(modifier) == false) {
+			sprite_group.splice(i, 1);
+			i--;
+		}
+	};
+}
 
 // reset the game
 var reset = function () {
@@ -257,12 +314,13 @@ var reset = function () {
 var update = function (modifier) {
 
 	lives -= group_collide(rock_group, my_ship);
+	group_group_collide(missile_group, rock_group);
 
 	my_ship.update(modifier);
 
-	for (var i = rock_group.length - 1; i >= 0; i--) {
-		rock_group[i].update(modifier);
-	};
+	update_sprite_group(rock_group, modifier);
+
+	update_sprite_group(missile_group, modifier);
 };
 
 // draw everything
@@ -276,9 +334,10 @@ var render = function () {
 	my_ship.draw();
 
 	// draw rocks
-	for (var i = rock_group.length - 1; i >= 0; i--) {
-		rock_group[i].draw();
-	};
+	draw_sprite_group(rock_group);
+
+	// draw missiles
+	draw_sprite_group(missile_group);
 
 	// draw position
 	ctx.fillStyle = "rgb(250, 250, 250)";
