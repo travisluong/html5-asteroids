@@ -63,6 +63,13 @@ explosion_img.onload = function () {
 }
 explosion_img.src = "img/explosion_alpha.png";
 
+nebula_info = new ImageInfo(400, 300, 800, 600);
+var nebula_img = new Image();
+nebula_img.onload = function () {
+	nebula_info.img_ready = true;
+}
+nebula_img.src = "img/nebula_blue.png";
+
 // image info class
 function ImageInfo(x_center, y_center, width, height, radius, lifespan, animated, img_ready) {
 	this.x_center = x_center;
@@ -328,7 +335,6 @@ var reset = function () {
 
 // update game objects
 var update = function (modifier) {
-
 	lives -= group_collide(rock_group, my_ship);
 	group_group_collide(missile_group, rock_group);
 
@@ -347,6 +353,9 @@ var render = function () {
 	// draw background
 	ctx.fillStyle = "black";
 	ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+	// drawImage(image, sx, sy, sWidth, sHeight, dx, dy, dWidth, dHeight)
+	ctx.drawImage(nebula_img, 0, 0, nebula_info.width, nebula_info.height, 0, 0, nebula_info.width, nebula_info.height);
 
 	// draw ship
 	my_ship.draw();
