@@ -27,6 +27,7 @@ var score = 0;
 var lives = 3;
 var started = false;
 var paused = false;
+var game_over = false;
 var time = 0;
 var time2 = 640;
 
@@ -328,6 +329,7 @@ var group_collide = function (group, sprite) {
 			if (lives == 1) { // ship explosion if on last life
 				explosion_group.push(new Sprite(my_ship.x, my_ship.y, my_ship.x_vel, my_ship.y_vel, my_ship.ang, my_ship.ang_vel, explosion_orange_img, explosion_orange_info));
 				ship_explosion_sound.play();
+				setTimeout(function(){game_over = true}, 2000);
 			}
 			group.splice(i, 1);
 			sprite.lifespan = 0;
@@ -363,7 +365,8 @@ addEventListener("keyup", function (e) {
 	delete keysDown[e.keyCode];
 }, false);
 
-// handling user-input
+// handle clicks
+
 // http://www.ibm.com/developerworks/library/wa-games/
 var the_canvas = $('canvas');
 
@@ -383,7 +386,9 @@ the_canvas.on('click', function(e) {
 		y: e.pageY - canvasPosition.y
 	}
 
-	if (!started) {
+	if (game_over) {
+		reset();
+	} else if (!started) {
 		started = true;
 	} else if (!paused) {
 		clearInterval(main_loop);
@@ -425,7 +430,12 @@ var update_sprite_group = function (sprite_group, modifier) {
 
 // reset the game
 var reset = function () {
-
+	started = false;
+	paused = false;
+	game_over = false;
+	lives = 3;
+	rock_group = [];
+	score = 0;
 };
 
 // update game objects
@@ -494,6 +504,16 @@ var render = function () {
 		ctx.textAlign = "center";
 		ctx.textBaseline = "top";
 		ctx.fillText('Click to start.', canvas.width / 2, canvas.height / 2);
+	}
+
+	if (game_over) {
+		ctx.fillStyle = "rgba(0, 0, 0, 0.7)";
+		ctx.fillRect(0, 0, canvas.width, canvas.height);
+		ctx.fillStyle = "rgb(250, 250, 250)";
+		ctx.font = "24px Consolas";
+		ctx.textAlign = "center";
+		ctx.textBaseline = "top";
+		ctx.fillText('Game Over', canvas.width / 2, canvas.height / 2);
 	}
 
 
