@@ -26,6 +26,7 @@ var HEIGHT = 600;
 var score = 0;
 var lives = 3;
 var started = false;
+var paused = false;
 var time = 0;
 var time2 = 640;
 
@@ -276,14 +277,16 @@ var rock_group = [];
 
 // rock spawner
 var rock_spawner = function () {
-	var plus_or_minus = Math.random() < 0.5 ? -1 : 1;
-	var rock_x = Math.random() * WIDTH;
-	var rock_y = Math.random() * HEIGHT;
-	var rock_x_vel = Math.random() * 100 * plus_or_minus;
-	var rock_y_vel = Math.random() * 100 * plus_or_minus;
-	var rock_ang_vel = Math.random() * 5 * plus_or_minus;
-	var a_rock = new Sprite(rock_x, rock_y, rock_x_vel, rock_y_vel, 0, rock_ang_vel, asteroid_img, asteroid_info, null, "asteroid");
-	rock_group.push(a_rock);
+	if (rock_group.length < 12 && started) {
+		var plus_or_minus = Math.random() < 0.5 ? -1 : 1;
+		var rock_x = Math.random() * WIDTH;
+		var rock_y = Math.random() * HEIGHT;
+		var rock_x_vel = Math.random() * 100 * plus_or_minus;
+		var rock_y_vel = Math.random() * 100 * plus_or_minus;
+		var rock_ang_vel = Math.random() * 5 * plus_or_minus;
+		var a_rock = new Sprite(rock_x, rock_y, rock_x_vel, rock_y_vel, 0, rock_ang_vel, asteroid_img, asteroid_info, null, "asteroid");
+		rock_group.push(a_rock);
+	}
 }
 
 setInterval(rock_spawner, 1000);
@@ -328,18 +331,54 @@ var keysDown = {};
 addEventListener("keydown", function (e) {
 	keysDown[e.keyCode] = true;
 	switch(e.keyCode){
-        case 37: case 39: case 38:  case 40: // arrow keys
-        case 32: e.preventDefault(); break; // space
-        default: break; // do not block other keys
-    }
-    if (e.keyCode == 32) {
-    	my_ship.shoot();
-    }
+		case 37: case 39: case 38:  case 40: // arrow keys
+		case 32: e.preventDefault(); break; // space
+		default: break; // do not block other keys
+	}
+	if (e.keyCode == 32) {
+		my_ship.shoot();
+	}
 }, false);
 
 addEventListener("keyup", function (e) {
 	delete keysDown[e.keyCode];
 }, false);
+
+// handling user-input
+// http://www.ibm.com/developerworks/library/wa-games/
+var the_canvas = $('canvas');
+
+// calculate position of the canvas DOM element on the page
+var canvasPosition = {
+	x: the_canvas.offset().left,
+	y: the_canvas.offset().top
+};
+
+the_canvas.on('click', function(e) {
+
+	// use pageX and pageY to get the mouse position
+	// relative to the browser window
+
+	var mouse = {
+		x: e.pageX - canvasPosition.x,
+		y: e.pageY - canvasPosition.y
+	}
+
+	if (!started) {
+		started = true;
+	} else if (!paused) {
+		clearInterval(main_loop);
+		paused = true;
+	} else {
+		then = Date.now(); // reset the delta so objects don't jump on unpause
+		main_loop = setInterval(main, 16);
+		paused = false;
+	}
+
+	// now you have local coordinates,
+	// which consider a (0,0) origin at the
+	// top-left of canvas element
+});
 
 // draw sprite group
 var draw_sprite_group = function (sprite_group) {
@@ -410,11 +449,24 @@ var render = function () {
 
 	// draw position
 	ctx.fillStyle = "rgb(250, 250, 250)";
-	ctx.font = "24px Helvetica";
+	ctx.font = "24px Consolas";
 	ctx.textAlign = "left";
 	ctx.textBaseline = "top";
 	ctx.fillText('score: ' + score, 32, 32);
 	ctx.fillText('lives: ' + lives, 558, 32);
+
+	if (!started) {
+		// draw background
+		ctx.fillStyle = "black";
+		ctx.fillRect(0, 0, canvas.width, canvas.height);
+		ctx.fillStyle = "rgb(250, 250, 250)";
+		ctx.font = "24px Consolas";
+		ctx.textAlign = "center";
+		ctx.textBaseline = "top";
+		ctx.fillText('Click to Start', canvas.width / 2, canvas.height / 2);
+	}
+
+
 };
 
 // the main game loop
@@ -431,7 +483,7 @@ var main = function () {
 // let's play this game!
 reset();
 var then = Date.now();
-setInterval(main, 16); // run script every 16 milliseconds, approx 60 FPS
+var main_loop = setInterval(main, 16); // run script every 16 milliseconds, approx 60 FPS
 </script>
 </body>
 </html>
