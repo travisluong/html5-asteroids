@@ -32,11 +32,9 @@ var time = 0;
 var time2 = 640;
 
 // create the canvas
-var canvas = document.createElement("canvas");
-var ctx = canvas.getContext("2d");
-canvas.width = WIDTH;
-canvas.height = HEIGHT;
-document.getElementById("stage").appendChild(canvas);
+var canvas = $('<canvas width ="' + WIDTH + '" height="' + HEIGHT + '"></canvas>');
+var ctx = canvas.get(0).getContext("2d");
+$(canvas).appendTo('#stage');
 
 // load audio
 var missile_sound = new Audio("sound/missile.wav");
@@ -366,17 +364,15 @@ addEventListener("keyup", function (e) {
 }, false);
 
 // handle clicks
-
 // http://www.ibm.com/developerworks/library/wa-games/
-var the_canvas = $('canvas');
 
 // calculate position of the canvas DOM element on the page
 var canvasPosition = {
-	x: the_canvas.offset().left,
-	y: the_canvas.offset().top
+	x: canvas.offset().left,
+	y: canvas.offset().top
 };
 
-the_canvas.on('click', function(e) {
+canvas.on('click', function(e) {
 
 	// use pageX and pageY to get the mouse position
 	// relative to the browser window
@@ -394,12 +390,12 @@ the_canvas.on('click', function(e) {
 		clearInterval(main_loop);
 		paused = true;
 		ctx.fillStyle = "rgba(0, 0, 0, 0.7)";
-		ctx.fillRect(0, 0, canvas.width, canvas.height);
+		ctx.fillRect(0, 0, WIDTH, HEIGHT);
 		ctx.fillStyle = "rgb(250, 250, 250)";
 		ctx.font = "24px Consolas";
 		ctx.textAlign = "center";
 		ctx.textBaseline = "top";
-		ctx.fillText('Paused. Click to resume.', canvas.width / 2, canvas.height / 2);
+		ctx.fillText('Paused. Click to resume.', WIDTH / 2, height / 2);
 	} else {
 		then = Date.now(); // reset the delta so objects don't jump on unpause
 		main_loop = setInterval(main, 16);
@@ -498,22 +494,22 @@ var render = function () {
 	if (!started) {
 		// draw background
 		ctx.fillStyle = "black";
-		ctx.fillRect(0, 0, canvas.width, canvas.height);
+		ctx.fillRect(0, 0, WIDTH, HEIGHT);
 		ctx.fillStyle = "rgb(250, 250, 250)";
 		ctx.font = "24px Consolas";
 		ctx.textAlign = "center";
 		ctx.textBaseline = "top";
-		ctx.fillText('Click to start.', canvas.width / 2, canvas.height / 2);
+		ctx.fillText('Click to start.', WIDTH / 2, HEIGHT / 2);
 	}
 
 	if (game_over) {
 		ctx.fillStyle = "rgba(0, 0, 0, 0.7)";
-		ctx.fillRect(0, 0, canvas.width, canvas.height);
+		ctx.fillRect(0, 0, WIDTH, HEIGHT);
 		ctx.fillStyle = "rgb(250, 250, 250)";
 		ctx.font = "24px Consolas";
 		ctx.textAlign = "center";
 		ctx.textBaseline = "top";
-		ctx.fillText('Game Over', canvas.width / 2, canvas.height / 2);
+		ctx.fillText('Game Over', WIDTH / 2, HEIGHT / 2);
 	}
 
 
