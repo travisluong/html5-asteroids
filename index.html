@@ -369,6 +369,13 @@ the_canvas.on('click', function(e) {
 	} else if (!paused) {
 		clearInterval(main_loop);
 		paused = true;
+		ctx.fillStyle = "rgba(0, 0, 0, 0.7)";
+		ctx.fillRect(0, 0, canvas.width, canvas.height);
+		ctx.fillStyle = "rgb(250, 250, 250)";
+		ctx.font = "24px Consolas";
+		ctx.textAlign = "center";
+		ctx.textBaseline = "top";
+		ctx.fillText('Paused. Click to resume.', canvas.width / 2, canvas.height / 2);
 	} else {
 		then = Date.now(); // reset the delta so objects don't jump on unpause
 		main_loop = setInterval(main, 16);
@@ -463,7 +470,7 @@ var render = function () {
 		ctx.font = "24px Consolas";
 		ctx.textAlign = "center";
 		ctx.textBaseline = "top";
-		ctx.fillText('Click to Start', canvas.width / 2, canvas.height / 2);
+		ctx.fillText('Click to start.', canvas.width / 2, canvas.height / 2);
 	}
 
 
