@@ -33,6 +33,10 @@
 			<br>click: pause/start</p>
 		</div>
 		<script type="text/javascript">
+// HTML5 Asteroids was developed by Travis Luong.
+// Thanks goes to Coursera and professors at Rice University
+// for teaching the free online Interactive Python course.
+
 // declare globals
 var WIDTH = 800;
 var HEIGHT = 600;
@@ -50,6 +54,8 @@ var ctx = canvas.get(0).getContext("2d");
 $(canvas).appendTo('#stage');
 
 // load audio
+// created with sfxr
+// http://www.drpetter.se/project_sfxr.html
 var missile_sound = new Audio("sound/missile.wav");
 
 var explosion_sound = new Audio("sound/explosion.wav");
@@ -60,6 +66,8 @@ var hit_sound = new Audio("sound/hit.wav");
 
 var thrust_sound = new Audio("sound/thrust.mp3");
 
+// load soundtrack
+// http://ericskiff.com/music/
 var soundtrack = new Audio("sound/07-we-the-resistors.mp3");
 
 soundtrack.volume = 0.3;
@@ -67,6 +75,7 @@ soundtrack.loop = true;
 soundtrack.play();
 
 // load images
+// art assets created by Kim Lathrop
 ship_info = new ImageInfo(45, 45, 90, 90, 35, false);
 var ship_img = new Image();
 ship_img.onload = function () {
@@ -115,8 +124,6 @@ debris_img.onload = function () {
 	debris_info.img_ready = true;
 }
 debris_img.src = "img/debris2_blue.png";
-
-
 
 // image info class
 function ImageInfo(x_center, y_center, width, height, radius, lifespan, animated, img_ready) {
@@ -383,7 +390,6 @@ addEventListener("keyup", function (e) {
 
 // handle clicks
 // http://www.ibm.com/developerworks/library/wa-games/
-
 // calculate position of the canvas DOM element on the page
 var canvasPosition = {
 	x: canvas.offset().left,
