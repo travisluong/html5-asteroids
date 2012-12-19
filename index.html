@@ -26,6 +26,8 @@ var HEIGHT = 600;
 var score = 0;
 var lives = 3;
 var started = false;
+var time = 0;
+var time2 = 640;
 
 // create the canvas
 var canvas = document.createElement("canvas");
@@ -69,6 +71,13 @@ nebula_img.onload = function () {
 	nebula_info.img_ready = true;
 }
 nebula_img.src = "img/nebula_blue.png";
+
+debris_info = new ImageInfo(320, 240, 640, 480);
+var debris_img = new Image();
+debris_img.onload = function () {
+	debris_info.img_ready = true;
+}
+debris_img.src = "img/debris2_blue.png";
 
 // image info class
 function ImageInfo(x_center, y_center, width, height, radius, lifespan, animated, img_ready) {
@@ -356,6 +365,15 @@ var render = function () {
 
 	// drawImage(image, sx, sy, sWidth, sHeight, dx, dy, dWidth, dHeight)
 	ctx.drawImage(nebula_img, 0, 0, nebula_info.width, nebula_info.height, 0, 0, nebula_info.width, nebula_info.height);
+
+	time += 0.5;
+	time2 += 0.5;
+	wtime = time % (debris_info.width * 2);
+	wtime2 = time2 % (debris_info.width * 2);
+
+	ctx.drawImage(debris_img, 0, 0, debris_info.width, debris_info.height, wtime - debris_info.width, 50, debris_info.width, debris_info.height);
+
+	ctx.drawImage(debris_img, 0, 0, debris_info.width, debris_info.height, wtime2 - debris_info.width, 50, debris_info.width, debris_info.height);
 
 	// draw ship
 	my_ship.draw();
