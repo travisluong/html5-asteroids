@@ -42,7 +42,11 @@ var missile_sound = new Audio("sound/missile.wav");
 
 var explosion_sound = new Audio("sound/explosion.wav");
 
+var ship_explosion_sound = new Audio("sound/ship_explosion.wav");
+
 var hit_sound = new Audio("sound/hit.wav");
+
+var thrust_sound = new Audio("sound/thrust.mp3");
 
 var soundtrack = new Audio("sound/07-we-the-resistors.mp3");
 
@@ -78,6 +82,13 @@ explosion_img.onload = function () {
 }
 explosion_img.src = "img/explosion_alpha.png";
 
+explosion_orange_info = new ImageInfo(64, 64, 128, 128, 17, 24, true);
+var explosion_orange_img = new Image();
+explosion_orange_img.onload = function () {
+	explosion_orange_info.img_ready = true;
+}
+explosion_orange_img.src = "img/explosion_orange.png";
+
 nebula_info = new ImageInfo(400, 300, 800, 600);
 var nebula_img = new Image();
 nebula_img.onload = function () {
@@ -91,6 +102,8 @@ debris_img.onload = function () {
 	debris_info.img_ready = true;
 }
 debris_img.src = "img/debris2_blue.png";
+
+
 
 // image info class
 function ImageInfo(x_center, y_center, width, height, radius, lifespan, animated, img_ready) {
@@ -150,7 +163,9 @@ function Ship(x, y, x_vel, y_vel, ang, ang_vel, image, info, type) {
 		// update thrust
 		if (38 in keysDown) { // up
 			this.thrust = true;
+			thrust_sound.play();
 		} else {
+			thrust_sound.pause();
 			this.thrust = false;
 		}
 		// update ang velocity
@@ -291,7 +306,7 @@ var rock_spawner = function () {
 
 setInterval(rock_spawner, 1000);
 
-var my_ship = new Ship(200, 200, 0, 0, 0, 0, ship_img, ship_info, "ship");
+var my_ship = new Ship(WIDTH / 2, HEIGHT / 2, 0, 0, 0, 0, ship_img, ship_info, "ship");
 
 var missile_group = [];
 
@@ -310,6 +325,10 @@ var group_collide = function (group, sprite) {
 			}
 			collisions += 1;
 			explosion_group.push(new Sprite(group[i].x, group[i].y, 0, 0, 0, 0, explosion_img, explosion_info));
+			if (lives == 1) { // ship explosion if on last life
+				explosion_group.push(new Sprite(my_ship.x, my_ship.y, my_ship.x_vel, my_ship.y_vel, my_ship.ang, my_ship.ang_vel, explosion_orange_img, explosion_orange_info));
+				ship_explosion_sound.play();
+			}
 			group.splice(i, 1);
 			sprite.lifespan = 0;
 			i--; // decrement i by 1 because group is now smaller by 1
@@ -411,8 +430,10 @@ var reset = function () {
 
 // update game objects
 var update = function (modifier) {
-	lives -= group_collide(rock_group, my_ship);
-	group_group_collide(missile_group, rock_group);
+	if (lives > 0) {
+		lives -= group_collide(rock_group, my_ship);
+		group_group_collide(missile_group, rock_group);
+	}
 
 	my_ship.update(modifier);
 
@@ -443,7 +464,9 @@ var render = function () {
 	ctx.drawImage(debris_img, 0, 0, debris_info.width, debris_info.height, wtime2 - debris_info.width, 50, debris_info.width, debris_info.height);
 
 	// draw ship
-	my_ship.draw();
+	if (lives > 0) {
+		my_ship.draw();
+	}
 
 	// draw rocks
 	draw_sprite_group(rock_group);
