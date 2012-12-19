@@ -36,6 +36,18 @@ canvas.width = WIDTH;
 canvas.height = HEIGHT;
 document.getElementById("stage").appendChild(canvas);
 
+// load audio
+var missile_sound = new Audio("sound/missile.wav");
+
+var explosion_sound = new Audio("sound/explosion.wav");
+
+var hit_sound = new Audio("sound/hit.wav");
+
+var soundtrack = new Audio("sound/07-we-the-resistors.mp3");
+
+soundtrack.volume = 0.3;
+soundtrack.play();
+
 // load images
 ship_info = new ImageInfo(45, 45, 90, 90, 35, false);
 var ship_img = new Image();
@@ -102,7 +114,7 @@ var dist = function (px, py, qx, qy) {
 };
 
 // ship class
-function Ship(x, y, x_vel, y_vel, ang, ang_vel, image, info) {
+function Ship(x, y, x_vel, y_vel, ang, ang_vel, image, info, type) {
 	this.x = x;
 	this.y = y;
 	this.x_vel = x_vel;
@@ -114,6 +126,7 @@ function Ship(x, y, x_vel, y_vel, ang, ang_vel, image, info) {
 	this.image_center_x = info.x_center;
 	this.image_center_y = info.y_center;
 	this.radius = info.radius;
+	this.type = type;
 	this.draw = function () {
 		// save context
 		ctx.save();
@@ -178,14 +191,14 @@ function Ship(x, y, x_vel, y_vel, ang, ang_vel, image, info) {
 		var missile_y = this.y + this.radius * forward[1];
 		var missile_x_vel = this.x_vel + 400 * forward[0];
 		var missile_y_vel = this.y_vel + 400 * forward[1];
-		var a_missile = new Sprite(missile_x, missile_y, missile_x_vel, missile_y_vel, this.angle, 0, missile_img, missile_info);
+		var a_missile = new Sprite(missile_x, missile_y, missile_x_vel, missile_y_vel, this.angle, 0, missile_img, missile_info, missile_sound, "missile");
 		missile_group.push(a_missile);
 	};
 	return this;
 };
 
 // sprite class
-function Sprite(x, y, x_vel, y_vel, ang, ang_vel, image, info, sound) {
+function Sprite(x, y, x_vel, y_vel, ang, ang_vel, image, info, sound, type) {
 	this.x = x;
 	this.y = y;
 	this.x_vel = x_vel;
@@ -199,6 +212,9 @@ function Sprite(x, y, x_vel, y_vel, ang, ang_vel, image, info, sound) {
 	this.image_center_x = info.x_center;
 	this.image_center_y = info.y_center;
 	this.age = 0;
+	if (sound) {
+		missile_sound.play();
+	}
 	this.draw = function () {
 		// save context
 		ctx.save();
@@ -266,13 +282,13 @@ var rock_spawner = function () {
 	var rock_x_vel = Math.random() * 100 * plus_or_minus;
 	var rock_y_vel = Math.random() * 100 * plus_or_minus;
 	var rock_ang_vel = Math.random() * 5 * plus_or_minus;
-	var a_rock = new Sprite(rock_x, rock_y, rock_x_vel, rock_y_vel, 0, rock_ang_vel, asteroid_img, asteroid_info);
+	var a_rock = new Sprite(rock_x, rock_y, rock_x_vel, rock_y_vel, 0, rock_ang_vel, asteroid_img, asteroid_info, null, "asteroid");
 	rock_group.push(a_rock);
 }
 
 setInterval(rock_spawner, 1000);
 
-var my_ship = new Ship(200, 200, 0, 0, 0, 0, ship_img, ship_info);
+var my_ship = new Ship(200, 200, 0, 0, 0, 0, ship_img, ship_info, "ship");
 
 var missile_group = [];
 
@@ -284,6 +300,11 @@ var group_collide = function (group, sprite) {
 	var remove_list = [];
 	for (var i = 0; i < group.length; i++) {
 		if (group[i].collide(sprite)) {
+			if (sprite.type === "ship") {
+				hit_sound.play();
+			} else {
+				explosion_sound.play();
+			}
 			collisions += 1;
 			explosion_group.push(new Sprite(group[i].x, group[i].y, 0, 0, 0, 0, explosion_img, explosion_info));
 			group.splice(i, 1);
