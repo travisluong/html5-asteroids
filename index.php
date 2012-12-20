@@ -12,6 +12,7 @@
 </head>
 <body>
 	<?php include('../header.php'); ?>
+	<div class="screen-reader"><h2>HTML5 Asteroids</h2></div>
 	<div id="stage"></div>
 	<div id="instructions">
 		<p>arrow keys: move ship
