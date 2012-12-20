@@ -5,27 +5,13 @@
 	<meta name="description" content="HTML5 Asteroids game by Travis Luong">
 	<meta name="keywords" content="asteroids, space shooter, html5, indie, browser-based, javascript, arcade, retro, oldschool, travis luong">
 	<title>HTML5 Asteroids</title>
-	<link rel="stylesheet" href="css/style.css">
+	<link rel="stylesheet" href="../css/reset.css">
+	<link rel="stylesheet" href="../css/global.css?v=1">
+	<link rel="stylesheet" href="css/style.css?v=1">
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
 </head>
 <body>
-	<div id="ad">
-		<script type="text/javascript"><!--
-		google_ad_client = "ca-pub-4878161254847351";
-		/* Games */
-		google_ad_slot = "3773816468";
-		google_ad_width = 728;
-		google_ad_height = 90;
-		//-->
-		</script>
-		<script type="text/javascript"
-		src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
-		</script>
-	</div>
-	<div id="header">
-		<h1>HTML5 Asteroids</h1>
-		<div id="author">by <a href="http://www.travisluong.com">Travis Luong</a></div>
-	</div>
+	<?php include('../header.php'); ?>
 	<div id="stage"></div>
 	<div id="instructions">
 		<p>arrow keys: move ship
@@ -555,18 +541,6 @@ reset();
 var then = Date.now();
 var main_loop = setInterval(main, 16); // run script every 16 milliseconds, approx 60 FPS
 </script>
-<script type="text/javascript">
-
-var _gaq = _gaq || [];
-_gaq.push(['_setAccount', 'UA-17273058-7']);
-_gaq.push(['_trackPageview']);
-
-(function() {
-	var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
-	ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
-	var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
-})();
-
-</script>
+<?php include('../footer.php'); ?>
 </body>
 </html>
