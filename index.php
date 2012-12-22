@@ -63,7 +63,7 @@ soundtrack.play();
 
 // load images
 // art assets created by Kim Lathrop
-ship_info = new ImageInfo(45, 45, 90, 90, 35, false);
+ship_info = new ImageInfo(45, 45, 90, 90, 15, false);
 var ship_img = new Image();
 ship_img.onload = function () {
 	ship_info.img_ready = true;
