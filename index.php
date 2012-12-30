@@ -5,6 +5,7 @@
 	<meta name="description" content="HTML5 Asteroids game by Travis Luong">
 	<meta name="keywords" content="asteroids, space shooter, html5, indie, browser-based, javascript, arcade, retro, oldschool, travis luong">
 	<title>HTML5 Asteroids</title>
+	<link href='http://fonts.googleapis.com/css?family=Press+Start+2P' rel='stylesheet' type='text/css'>
 	<link rel="stylesheet" href="../css/reset.css">
 	<link rel="stylesheet" href="../css/global.css?v=1">
 	<link rel="stylesheet" href="css/style.css?v=1">
@@ -15,9 +16,9 @@
 	<div class="screen-reader"><h2>HTML5 Asteroids</h2></div>
 	<div id="stage"></div>
 	<div id="instructions">
-		<p>arrow keys: move ship
-			<br>space bar: shoot
-			<br>click: pause/start</p>
+		<p>ARROW KEYS: MOVE SHIP
+			<br>SPACE BAR: SHOOT
+			<br>CLICK: PAUSE/START</p>
 		</div>
 		<script type="text/javascript">
 // HTML5 Asteroids was developed by Travis Luong.
@@ -403,10 +404,10 @@ canvas.on('click', function(e) {
 		ctx.fillStyle = "rgba(0, 0, 0, 0.7)";
 		ctx.fillRect(0, 0, WIDTH, HEIGHT);
 		ctx.fillStyle = "rgb(250, 250, 250)";
-		ctx.font = "24px Consolas";
+		ctx.font = "18px 'Press Start 2P'";
 		ctx.textAlign = "center";
 		ctx.textBaseline = "top";
-		ctx.fillText('Paused. Click to resume.', WIDTH / 2, HEIGHT / 2);
+		ctx.fillText('PAUSED', WIDTH / 2, HEIGHT / 2);
 	} else {
 		then = Date.now(); // reset the delta so objects don't jump on unpause
 		main_loop = setInterval(main, 16);
@@ -496,31 +497,31 @@ var render = function () {
 
 	// draw position
 	ctx.fillStyle = "rgb(250, 250, 250)";
-	ctx.font = "24px Consolas";
+	ctx.font = "18px 'Press Start 2P'";
 	ctx.textAlign = "left";
 	ctx.textBaseline = "top";
-	ctx.fillText('score: ' + score, 32, 32);
-	ctx.fillText('lives: ' + lives, 558, 32);
+	ctx.fillText('SCORE: ' + score, 32, 32);
+	ctx.fillText('LIVES: ' + lives, 558, 32);
 
 	if (!started) {
 		// draw background
 		ctx.fillStyle = "black";
 		ctx.fillRect(0, 0, WIDTH, HEIGHT);
 		ctx.fillStyle = "rgb(250, 250, 250)";
-		ctx.font = "24px Consolas";
+		ctx.font = "18px 'Press Start 2P'";
 		ctx.textAlign = "center";
 		ctx.textBaseline = "top";
-		ctx.fillText('Click to start.', WIDTH / 2, HEIGHT / 2);
+		ctx.fillText('CLICK TO START.', WIDTH / 2, HEIGHT / 2);
 	}
 
 	if (game_over) {
 		ctx.fillStyle = "rgba(0, 0, 0, 0.7)";
 		ctx.fillRect(0, 0, WIDTH, HEIGHT);
 		ctx.fillStyle = "rgb(250, 250, 250)";
-		ctx.font = "24px Consolas";
+		ctx.font = "18px 'Press Start 2P'";
 		ctx.textAlign = "center";
 		ctx.textBaseline = "top";
-		ctx.fillText('Game Over', WIDTH / 2, HEIGHT / 2);
+		ctx.fillText('GAME OVER', WIDTH / 2, HEIGHT / 2);
 	}
 
 
