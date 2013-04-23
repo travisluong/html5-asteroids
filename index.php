@@ -21,9 +21,7 @@
 			<br>CLICK: PAUSE/START</p>
 		</div>
 		<script type="text/javascript">
-// HTML5 Asteroids was developed by Travis Luong.
-// Thanks goes to Coursera and professors at Rice University
-// for teaching the free online Interactive Python course.
+// HTML5 Asteroids was developed by Travis Luong
 
 // declare globals
 var WIDTH = 800;
